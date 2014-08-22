@@ -3,6 +3,9 @@
 
 import sys
 from PyQt4 import QtGui
+from PyQt4.QtGui import QPalette
+from PyQt4.QtGui import QBrush
+from PyQt4.QtGui import QPixmap
 
 # My current intention is to have each window as a separate class.
 class Menu(QtGui.QWidget):
@@ -17,6 +20,10 @@ class Menu(QtGui.QWidget):
         self.setGeometry(300, 300, 300, 300)
         self.setWindowTitle('World Builder')
         self.setWindowIcon(QtGui.QIcon('icon.png'))
+        palette	= QPalette()
+        palette.setBrush(QPalette.Background,QBrush(QPixmap("bg.jpg")))
+
+        self.setPalette(palette)
 
         self.show()
 
