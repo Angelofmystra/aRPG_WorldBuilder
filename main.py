@@ -19,7 +19,8 @@ class Menu(QtGui.QWidget):
 
     def initUI(self):
         QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
-        self.setGeometry(300, 300, 300, 300)
+        self.resize(300,300)
+        self.center()
         self.setWindowTitle('World Builder')
         self.setWindowIcon(QtGui.QIcon('icon.png'))
         palette	= QPalette()
@@ -47,6 +48,12 @@ class Menu(QtGui.QWidget):
             event.accept()
         else:
             event.ignore()
+    def center(self):
+
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 def main():
 
