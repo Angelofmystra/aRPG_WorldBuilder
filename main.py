@@ -4,17 +4,26 @@
 import sys
 from PyQt4 import QtGui
 
+# My current intention is to have each window as a separate class.
+class Menu(QtGui.QWidget):
+
+    def __init__(self):
+        super(Menu, self).__init__()
+
+        self.initUI()
+
+    def initUI(self):
+
+        self.setGeometry(300, 300, 300, 300)
+        self.setWindowTitle('World Builder')
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
+
+        self.show()
 
 def main():
 
     app = QtGui.QApplication(sys.argv)
-
-    w = QtGui.QWidget()
-    w.resize(800, 600)
-    w.move(300, 300)
-    w.setWindowTitle('World Builder')
-    w.show()
-
+    menu = Menu()
     sys.exit(app.exec_())
 
 
