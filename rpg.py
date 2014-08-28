@@ -56,7 +56,7 @@ class Menu(QtGui.QWidget):
                                         0,
                                         0,
                                         "Click this to look for servers",
-                                        functools.partial(self.end)
+                                        functools.partial(self.start_client)
                                         ))
         grid.addWidget(self.createButton(
                                         "Start Server",
@@ -104,12 +104,17 @@ class Menu(QtGui.QWidget):
     def start_server(self):
         if self.window2 is None:
             self.window2 = HostServer()
+        past = self
         self.window2.show()
-        self.close
+        past.close
 
     @pyqtSlot()
     def start_client(self):
-        return 0
+        if self.window2 is None:
+            self.window2 = SelectServer()
+        past = self
+        self.window2.show()
+        past.close
 
     @pyqtSlot()
     def update_client(self):
@@ -153,7 +158,7 @@ class HostServer(QtGui.QWidget):
 
     def __init__(self):
         super(HostServer, self).__init__()
-
+        self.window2 = None
         self.initUI()
 
     def initUI(self):
@@ -195,8 +200,8 @@ class HostServer(QtGui.QWidget):
         okButton = QtGui.QPushButton("OK")
         cancelButton = QtGui.QPushButton("Cancel")
 
-        grid.addWidget(okButton,6,0)
-        grid.addWidget(cancelButton,6,1)
+        grid.addWidget(self.createButton("OK",6,0,"Hosts the server",functools.partial(self.ok)))
+        grid.addWidget(self.createButton("Cancel",6,1,"Returns to the main menu",functools.partial(self.cancel)))
 
         self.setLayout(grid)
 
@@ -216,20 +221,196 @@ class HostServer(QtGui.QWidget):
         return btn
 
     @pyqtSlot()
-    def start_server(self):
-        host = HostServer()
+    def ok(self):
+        if self.window2 is None:
+            self.window2 = ServerConsole()
+        past = self
+        self.window2.show()
+        past.close
 
     @pyqtSlot()
-    def start_client(self):
+    def cancel(self):
+        if self.window2 is None:
+            self.window2 = Menu()
+        past = self
+        self.window2.show()
+        past.close
+
+    @pyqtSlot()
+    def end(self):
+        self.close()
+
+    def closeEvent(self, event):
+
+        reply = QtGui.QMessageBox.question(self, 'Message',
+            "Are you sure to quit?", QtGui.QMessageBox.Yes |
+            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+    def center(self):
+
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+
+################################################################
+# ============================================================ #
+################################################################
+        # Server Console Window #
+################################################################
+# ============================================================ #
+################################################################
+
+
+class ServerConsole(QtGui.QWidget):
+
+    def __init__(self):
+        super(ServerConsole, self).__init__()
+        self.window2 = None
+        self.initUI()
+
+    def initUI(self):
+        QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
+        self.center()
+        self.setWindowTitle('Host')
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
+        palette	= QPalette()
+        palette.setBrush(QPalette.Background,QBrush(QPixmap("bg.jpg")))
+        # Layout
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(10)
+################################################################
+        # BUTTONS #
+################################################################
+
+        server_console_input = QtGui.QLineEdit()
+        server_console_output = QtGui.QTextBrowser()
+
+        grid.addWidget(server_console_output,1,0)
+        grid.addWidget(server_console_input,2,0)
+
+        sendButton = QtGui.QPushButton("Send")
+
+        grid.addWidget(sendButton,2,1)
+
+        self.setLayout(grid)
+
+        self.setPalette(palette)
+
+        self.show()
+################################################################
+        # FUNCTIONS #
+################################################################
+
+    def createButton(self, name, x, y, tooltip, func):
+        btn = QtGui.QPushButton(name, self)
+        btn.move(x,y)
+        btn.resize(btn.sizeHint())
+        btn.setToolTip(tooltip)
+        btn.clicked.connect(func)
+        return btn
+
+    @pyqtSlot()
+    def ok(self):
         return 0
 
     @pyqtSlot()
-    def update_client(self):
+    def cancel(self):
+        if self.window2 is None:
+            self.window2 = Menu()
+        past = self
+        self.window2.show()
+        past.close
+
+    @pyqtSlot()
+    def end(self):
+        self.close()
+
+    def closeEvent(self, event):
+
+        reply = QtGui.QMessageBox.question(self, 'Message',
+            "Are you sure to quit?", QtGui.QMessageBox.Yes |
+            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+    def center(self):
+
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+
+
+################################################################
+# ============================================================ #
+################################################################
+        # Server Console Window #
+################################################################
+# ============================================================ #
+################################################################
+
+
+class SelectServer(QtGui.QWidget):
+
+    def __init__(self):
+        super(SelectServer, self).__init__()
+        self.window2 = None
+        self.initUI()
+
+    def initUI(self):
+        QtGui.QToolTip.setFont(QtGui.QFont('SansSerif', 10))
+        self.center()
+        self.setWindowTitle('Select Server')
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
+        palette	= QPalette()
+        palette.setBrush(QPalette.Background,QBrush(QPixmap("bg.jpg")))
+        # Layout
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(10)
+################################################################
+        # BUTTONS #
+################################################################
+        grid.addWidget(self.createButton("OK", 1,0, "Connect to the currently highlighted server", functools.partial(self.ok)))
+        grid.addWidget(self.createButton("OK", 2,0, "Connect to the currently highlighted server", functools.partial(self.ok)))
+        grid.addWidget(self.createButton("Cancel", 2,1, "Return to the main menu", functools.partial(self.cancel)))
+
+        self.setLayout(grid)
+
+        self.setPalette(palette)
+
+        self.show()
+################################################################
+        # FUNCTIONS #
+################################################################
+
+    def createButton(self, name, x, y, tooltip, func):
+        btn = QtGui.QPushButton(name, self)
+        btn.move(x,y)
+        btn.resize(btn.sizeHint())
+        btn.setToolTip(tooltip)
+        btn.clicked.connect(func)
+        return btn
+
+    @pyqtSlot()
+    def ok(self):
         return 0
 
     @pyqtSlot()
-    def view_doc(self):
-        return 0
+    def cancel(self):
+        if self.window2 is None:
+            self.window2 = Menu()
+        past = self
+        self.window2.show()
+        past.close
 
     @pyqtSlot()
     def end(self):
